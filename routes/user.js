@@ -31,15 +31,16 @@ router.post("/register",async(req, res) => {
 
      const newUserToken=   await newUser.save();
         const payload = {
-            _id: searchedUser._id,
-            name:searchedUser.name,
+            _id: newUser._id,
+            name:newUser.name,
         };
         const token = jwt.sign(payload, process.env.SecretOrkey,{expiresIn:3600,});
-        res.status(200).send({ newUser, msg: "User is successfully saved" } );
+        res.status(200).send({ newUser, msg: "User is successfully saved",token } );
         // 
 
     } catch (error) {
-        res.status(500).send("can not save the user",token);
+        res.status(500).send("can not save the user");
+        console.log(error)
     }
 })
 //login
@@ -81,6 +82,16 @@ router.get("/current", isAuth(), (req, res) => {
     res.status(200).send({ user: req.user });
     
 })
+//admin
+router.get('/profile', isAuth(), (req, res, data) =>{ 
+    //  if req.userData is user object
+    if(req.isAdmin === true) {
+      return res.redirect('/dashboard')
+    } else {
+       return  res.redirect('/Profile')
+    }
+
+});
 
 
 module.exports = router;
